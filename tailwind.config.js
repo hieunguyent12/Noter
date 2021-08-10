@@ -15,9 +15,6 @@ module.exports = {
         "hover-icon": "rgb(55, 53, 47, 0.08)",
         sidebar: "rgb(247, 246, 243)",
       },
-      textColor: {
-        light: "rgba(25, 23, 17, 0.6)",
-      },
       white: "white",
       gray: {
         100: "#F3F4F6",
@@ -25,6 +22,11 @@ module.exports = {
         400: "#9CA3AF",
         500: "#525967",
       },
+    },
+    textColor: {
+      primary: "rgba(55, 53, 47)",
+      secondary: "rgba(0, 108, 140)",
+      light: "rgba(25, 23, 17, 0.6)",
     },
     extend: {
       borderColor: {
@@ -34,6 +36,9 @@ module.exports = {
       transitionProperty: {
         left: "left",
         position: "position",
+      },
+      boxShadow: {
+        test: "rgba(15, 15, 15, 0.05) 0px 0px 0px 1px, rgba(15, 15, 15, 0.1) 0px 3px 6px, rgb(48, 48, 48, 0.2) 0px 9px 24px",
       },
     },
   },
