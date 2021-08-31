@@ -15,9 +15,11 @@ import EditIcon from "../components/icons/EditIcon";
 
 type MenuProps = {
   parentContainer: HTMLDivElement | null;
+  onDeleteClass: () => Promise<void>;
+  onEditClass: () => Promise<void>;
 };
 
-const Menu = ({ parentContainer }: MenuProps) => {
+const Menu = ({ parentContainer, onDeleteClass, onEditClass }: MenuProps) => {
   const [referenceElement, setReferenceElement] =
     useState<HTMLDivElement | null>(null);
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(
@@ -43,6 +45,35 @@ const Menu = ({ parentContainer }: MenuProps) => {
     }
   }, [parentContainer, visible]);
 
+  const renderPortal = () => {
+    if (!parentContainer) return null;
+
+    return createPortal(
+      <OutsideClickHandler cb={() => setVisible(false)}>
+        <div
+          ref={setPopperElement}
+          style={styles.popper}
+          {...attributes.popper}
+          className="bg-white shadow-test w-32 text-sm px-2"
+        >
+          <p className="flex items-center my-2" onClick={onEditClass}>
+            <span>
+              <EditIcon className="h-4 w-4" />
+            </span>
+            <span className="ml-1">Edit</span>
+          </p>
+          <p className="flex items-center my-2">
+            <span>
+              <DeleteIcon className="h-4 w-4" />
+            </span>
+            <span className="ml-1">Delete</span>
+          </p>
+        </div>
+      </OutsideClickHandler>,
+      parentContainer
+    );
+  };
+
   return (
     <>
       <div
@@ -53,60 +84,9 @@ const Menu = ({ parentContainer }: MenuProps) => {
         <DotsIcon />
       </div>
 
-      {visible && (
-        <MenuPortal
-          parentContainer={parentContainer}
-          // ref={menuRef}
-          setVisible={setVisible}
-          setPopperElement={setPopperElement}
-          styles={styles}
-          attributes={attributes}
-        />
-      )}
+      {visible && renderPortal()}
     </>
   );
 };
-
-interface Props {
-  parentContainer: HTMLDivElement | null;
-  setVisible: Dispatch<SetStateAction<boolean>>;
-  setPopperElement: Dispatch<SetStateAction<HTMLDivElement | null>>;
-  styles: {
-    [key: string]: CSSProperties;
-  };
-  attributes: any;
-}
-const MenuPortal = (props: Props) => {
-  const { setPopperElement, styles, attributes, parentContainer } = props;
-
-  if (!parentContainer) return null;
-
-  return createPortal(
-    <OutsideClickHandler cb={() => props.setVisible(false)}>
-      <div
-        ref={setPopperElement}
-        style={styles.popper}
-        {...attributes.popper}
-        className="bg-white shadow-test w-32 text-sm px-2"
-      >
-        <p className="flex items-center my-2">
-          <span>
-            <EditIcon className="h-4 w-4" />
-          </span>
-          <span className="ml-1">Edit</span>
-        </p>
-        <p className="flex items-center my-2">
-          <span>
-            <DeleteIcon className="h-4 w-4" />
-          </span>
-          <span className="ml-1">Delete</span>
-        </p>
-      </div>
-    </OutsideClickHandler>,
-    parentContainer
-  );
-};
-
-MenuPortal.displayName = "MenuPortal";
 
 export default Menu;
