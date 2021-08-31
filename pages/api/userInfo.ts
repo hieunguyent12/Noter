@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import jwt from "next-auth/jwt";
 
+import checkCsrf from "../../utils/checkCsrf";
 import { db } from "../../utils/db";
 
 type Data = {
@@ -15,6 +16,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
+  if (!checkCsrf(req, res)) return;
+
   if (req.method === "POST") {
     try {
       const { role, school } = req.body;

@@ -3,6 +3,7 @@ import { getToken } from "next-auth/jwt";
 import { nanoid } from "nanoid";
 
 import { db } from "../../utils/db";
+import checkCsrf from "../../utils/checkCsrf";
 
 const jwt_secret = process.env.JWT_SECRET;
 
@@ -10,6 +11,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  if (!checkCsrf(req, res)) return;
+
   const user = await getToken({ req, secret: jwt_secret });
 
   if (req.method === "POST") {
@@ -53,5 +56,9 @@ export default async function handler(
       if (user.role === "student") {
       }
     }
+  }
+
+  if (req.method === "PUT") {
+    return res.json({ id: 1 });
   }
 }
