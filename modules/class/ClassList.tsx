@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Modal from "react-modal";
+// import Modal from "react-modal";
 
 import AddIcon from "../../components/icons/AddIcon";
 import axios from "../../utils/axios";
@@ -8,29 +8,12 @@ import Button from "../../components/Button";
 import Input from "../../components/Input";
 import DotsIcon from "../../components/icons/DotsIcon";
 import Menu from "../../components/Menu";
+import Modal from "../../components/Modal";
 
 interface Props {
   classes: Class[];
   isTeacher: boolean;
 }
-
-const customStyles = {
-  content: {
-    height: "272px",
-    width: "300px",
-    top: "40%",
-    left: "50%",
-    right: "auto",
-    bottom: "auto",
-    marginRight: "-50%",
-    transform: "translate(-50%, -40%)",
-    border: "none",
-    padding: "17px 17px 0px 17px",
-  },
-  overlay: {
-    backgroundColor: "rgba(0,0,0,0.4)",
-  },
-};
 
 const isClient = typeof window !== "undefined";
 
@@ -88,6 +71,19 @@ const ClassList = ({ classes, isTeacher }: Props) => {
     }
   };
 
+  const onEditClass = async (classId: string) => {
+    try {
+      if (!classId) return;
+      await axios.put("/api/classes", {
+        classId,
+      });
+    } catch (e) {
+      console.log(e.response);
+    }
+  };
+
+  const onDeleteClass = async (classId: string) => {};
+
   return (
     <>
       <div>
@@ -98,7 +94,11 @@ const ClassList = ({ classes, isTeacher }: Props) => {
             className="h-11 relative group flex justify-between items-center p-2 border rounded my-2 hover:bg-accent-hover-list cursor-pointer"
           >
             <p>{c.name}</p>
-            <Menu parentContainer={parentContainerRef.current} />
+            <Menu
+              parentContainer={parentContainerRef.current}
+              onEditClass={() => onEditClass(c.class_id)}
+              onDeleteClass={() => onDeleteClass(c.class_id)}
+            />
           </div>
         ))}
         {isTeacher && (
@@ -110,43 +110,43 @@ const ClassList = ({ classes, isTeacher }: Props) => {
             >
               New class
             </Button>
-            {/* TODO create a separate component for Modal */}
             <Modal
               isOpen={isModalOpen}
               onRequestClose={() => setIsModalOpen(false)}
-              style={customStyles}
-            >
-              <div>
-                <p className="mb-3">Create class</p>
-                {/* TODO Handle errors for inputs */}
-                <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="class_name"
-                >
-                  Class name
-                </label>
-                <Input
-                  type="text"
-                  placeholder="Class name"
-                  value={className}
-                  onChange={(e) => setClassName(e.target.value)}
-                  className="p-2"
-                  id="class_name"
-                />
-                <label
-                  className="block text-gray-700 text-sm font-bold mb-2 mt-4"
-                  htmlFor="subject"
-                >
-                  Subject
-                </label>
-                <Input
-                  type="text"
-                  placeholder="Subject"
-                  value={classSubject}
-                  onChange={(e) => setClassSubject(e.target.value)}
-                  className="p-2"
-                  id="subject"
-                />
+              header="Create class"
+              body={
+                <>
+                  <label
+                    className="block text-gray-700 text-sm font-bold mb-2"
+                    htmlFor="class_name"
+                  >
+                    Class name
+                  </label>
+                  <Input
+                    type="text"
+                    placeholder="Class name"
+                    value={className}
+                    onChange={(e) => setClassName(e.target.value)}
+                    className="p-2"
+                    id="class_name"
+                  />
+                  <label
+                    className="block text-gray-700 text-sm font-bold mb-2 mt-4"
+                    htmlFor="subject"
+                  >
+                    Subject
+                  </label>
+                  <Input
+                    type="text"
+                    placeholder="Subject"
+                    value={classSubject}
+                    onChange={(e) => setClassSubject(e.target.value)}
+                    className="p-2"
+                    id="subject"
+                  />
+                </>
+              }
+              footer={
                 <div className="flex justify-end mt-2">
                   <p
                     className="p-1 mt-2 text-gray-500 rounded cursor-pointer text-opacity-60 mr-2"
@@ -161,8 +161,8 @@ const ClassList = ({ classes, isTeacher }: Props) => {
                     Create
                   </p>
                 </div>
-              </div>
-            </Modal>
+              }
+            ></Modal>
           </div>
         )}
       </div>
